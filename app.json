@@ -1,0 +1,38 @@
+{
+    "expo": {
+        "name": "react-app",
+        "slug": "react-app",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "assetBundlePatterns": ["**/*"],
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            }
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "plugins": [
+            [
+                "expo-media-library",
+                {
+                    "photosPermissions": "Allow $(PRODUCT_NAME) to access your photos",
+                    "savePhotosPermissions": "Allow $(PRODUCT_NAME) to save photos",
+                    "isAccesMediaLocationEnabled": "true"
+                }
+            ]
+        ]
+    }
+}

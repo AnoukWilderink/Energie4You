@@ -2,9 +2,6 @@
 
 ## Start project
 ```bash
-cd react-app
-```
-```bash
 npx expo start
 ```
 
