@@ -1,31 +1,29 @@
 import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useRef, useState } from "react";
 import {
     StyleSheet,
     Text,
-    TextInput,
     View,
     SafeAreaView,
     Image,
+    TextInput,
     Pressable,
 } from "react-native";
-import { useEffect, useState, useRef } from "react";
-import * as MailComposer from "expo-mail-composer";
-import * as Location from "expo-location";
-import { ScrollView } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { Camera } from "expo-camera";
+import { shareAsync } from "expo-sharing";
 import * as MediaLibrary from "expo-media-library";
-import { styles } from './styles';
+import { Picker } from "@react-native-picker/picker";
+import { ScrollView } from "react-native";
+import Mailer from "react-native-mail";
+
 
 export default function App() {
+    
     let cameraRef = useRef();
     const [hasCameraPermission, setHasCameraPermission] = useState();
-    const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
-        useState();
+    const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState();
     const [photo, setPhoto] = useState();
-
-    const [isAvailable, setIsAvailable] = useState(false);
-
+    
     const [category, setCategory] = useState("Grondkabels");
     const [description, setDescription] = useState("");
     const [engineer, setEngineer] = useState("");
@@ -33,33 +31,16 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            const cameraPermission =
-                await Camera.requestCameraPermissionsAsync();
-            const mediaLibraryPermission =
-                await MediaLibrary.requestPermissionsAsync();
+            const cameraPermission = await Camera.requestCameraPermissionsAsync();
+            const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
             setHasCameraPermission(cameraPermission.status === "granted");
-            setHasMediaLibraryPermission(
-                mediaLibraryPermission.status === "granted"
-            );
+            setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
         })();
     }, []);
 
-    // Move the email composer availability check outside of the conditional rendering
-    useEffect(() => {
-        async function checkAvailability() {
-            const isMailAvailable = await MailComposer.isAvailableAsync();
-            setIsAvailable(isMailAvailable);
-        }
-
-        checkAvailability();
-    }, []);
-
-    if (
-        hasCameraPermission === undefined ||
-        hasMediaLibraryPermission === undefined
-    ) {
+    if (hasCameraPermission === undefined) {
         return <Text>Requesting permissions...</Text>;
-    } else if (!hasCameraPermission || !hasMediaLibraryPermission) {
+    } else if (!hasCameraPermission) {
         return (
             <Text>
                 Permission for the camera not granted. Please change this in
@@ -75,43 +56,53 @@ export default function App() {
             exif: false,
         };
 
-        // Get device's current location
-        try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== "granted") {
-                alert("Permission to access location was denied");
-                return;
-            }
-
-            let location = await Location.getCurrentPositionAsync({});
-
-            // Use reverse geocoding to get the city name
-            let reverseGeocode = await Location.reverseGeocodeAsync({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-            });
-
-            // Extract the city name from the response
-            const cityName = reverseGeocode[0]?.city || "Unknown City";
-
-            setLocation(cityName);
-        } catch (error) {
-            console.error("Error getting location:", error);
-        }
-
         let newPhoto = await cameraRef.current.takePictureAsync(options);
         setPhoto(newPhoto);
     };
 
-    const sendMail = async () => {
-        const emailBody = `Categorie: ${category}\nOmschrijving: ${description}\n Monteur: ${engineer}\nLocatie: ${location}`;
-
-        MailComposer.composeAsync({
-            body: emailBody,
-        });
-    };
-
     if (photo) {
+        // let sharePic = () => {
+        //     shareAsync(photo.uri).then(() => {
+        //         setPhoto(undefined);
+        //     });
+        // };
+
+        // let savePhoto = () => {
+        //     MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+        //         setPhoto(undefined);
+        //     });
+        // };
+        let shareAndSendEmail = () => {
+            shareAsync(photo.uri).then(() => {
+                sendEmail();
+                setPhoto(undefined);
+            });
+        };
+
+        let sendEmail = () => {
+            Mailer.mail(
+                {
+                    subject: "Energie4You Photo Submission",
+                    recipients: ["a.wilderink@hotmail.nl"],
+                    body: `
+                        <p><b>Categorie:</b> ${category}</p>
+                        <p><b>Omschrijving:</b> ${description}</p>
+                        <p><b>Monteur:</b> ${engineer}</p>
+                        <p><b>Locatie:</b> ${location}</p>
+                        <img src="data:image/jpg;base64,${photo.base64}" />
+                    `,
+                    isHTML: true,
+                },
+                (error, event) => {
+                    if (error) {
+                        console.error("Could not send email", error);
+                    }
+                }
+            );
+        };
+
+
+
         return (
             <ScrollView>
                 <SafeAreaView style={styles.container}>
@@ -133,6 +124,7 @@ export default function App() {
                             height: 250,
                             objectFit: "cover",
                             borderRadius: 3,
+                            // flex: 1,
                         }}
                     >
                         <Image
@@ -146,6 +138,12 @@ export default function App() {
                         />
                     </View>
 
+                    {/* Foto opslaan op apparaat NIET VEREIST */}
+                    {/* {hasMediaLibraryPermission ? (
+                    <Pressable style={styles.btn} onPress={savePhoto}>
+                        <Text style={styles.btnText}>Opslaan op apparaat</Text>
+                    </Pressable>
+                ) : undefined} */}
                     <Pressable
                         style={styles.btn}
                         onPress={() => setPhoto(undefined)}
@@ -184,46 +182,42 @@ export default function App() {
                         ]}
                         secureTextEntry={false}
                         placeholder="Omschrijving"
-                        value={description}
-                        onChangeText={setDescription}
                     />
                     <Text style={styles.green}>Monteur</Text>
                     <TextInput
                         style={styles.input}
                         secureTextEntry={false}
                         placeholder="Monteur"
-                        value={engineer}
-                        onChangeText={setEngineer}
                     />
                     <Text style={styles.green}>Locatie</Text>
                     <TextInput
                         style={styles.input}
                         secureTextEntry={false}
                         placeholder="Location"
-                        value={location}
-                        onChangeText={setLocation}
                     />
-
-                    {isAvailable ? (
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.btn,
-                                pressed && styles.btnPressed,
-                            ]}
-                            onPress={sendMail}
-                        >
-                            <Text style={styles.btnText}>Send Mail</Text>
-                        </Pressable>
-                    ) : (
-                        <Text>Email not available</Text>
-                    )}
+                    {/* Only shares picture */}
+                    {/* <Pressable style={styles.btn} onPress={sharePic}>
+                        <Text style={styles.btnText}>Delen</Text>
+                    </Pressable> */}
+                    <Pressable style={styles.btn} onPress={shareAndSendEmail}>
+                        <Text style={styles.btnText}>Delen en E-mailen</Text>
+                    </Pressable>
                 </SafeAreaView>
             </ScrollView>
         );
     }
 
+    // Make picture screen
     return (
         <SafeAreaView style={styles.containerCamera}>
+            {/* <Text
+                style={[
+                    styles.green,
+                    { fontSize: 32, textAlign: "center", paddingBottom: 30 },
+                ]}
+            >
+                Energie4You
+            </Text> */}
             <Camera style={styles.camera} ref={cameraRef} />
             <Pressable
                 style={[
@@ -245,3 +239,73 @@ export default function App() {
     );
 }
 
+const styles = StyleSheet.create({
+    // container: {
+    //     backgroundColor: "#011302",
+    //     alignItems: "start",
+    //     justifyContent: "start",
+    // },
+
+    containerCamera: {
+        flex: 1,
+        color: "#D3F26A",
+        backgroundColor: "#011302",
+        position: "relative",
+        // alignItems: "center",
+        // justifyContent: "center",
+    },
+
+    container: {
+        flex: 1,
+        color: "#D3F26A",
+        backgroundColor: "#011302",
+        alignItems: "start",
+        justifyContent: "start",
+        padding: 75,
+        paddingLeft: 30,
+        paddingRight: 30,
+        gap: 10,
+        position: "relative",
+    },
+
+    camera: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+    },
+
+    green: {
+        color: "#D3F26A",
+        fontSize: 20,
+    },
+    input: {
+        fontSize: 18,
+        backgroundColor: "white",
+        width: "100",
+        color: "#808080",
+        borderRadius: 3,
+        paddingLeft: 10,
+        padding: 3,
+    },
+    btn: {
+        backgroundColor: "#D3F26A",
+        borderRadius: 3,
+        padding: 15,
+        paddingTop: 7,
+        paddingBottom: 7,
+    },
+    btnRound: {
+        backgroundColor: "#D3F26A",
+        borderRadius: 100,
+        width: 70,
+        height: 70,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    btnText: {
+        fontSize: 20,
+        color: "#25282B",
+        textAlign: "center",
+    },
+});
