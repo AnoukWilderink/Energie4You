@@ -1,18 +1,10 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    // container: {
-    //     backgroundColor: "#011302",
-    //     alignItems: "start",
-    //     justifyContent: "start",
-    // },
-
     containerCamera: {
         flex: 1,
         color: "#D3F26A",
         position: "relative",
-        // alignItems: "center",
-        // justifyContent: "center",
     },
 
     container: {
@@ -46,26 +38,5 @@ export const styles = StyleSheet.create({
         borderRadius: 3,
         paddingLeft: 10,
         padding: 3,
-    },
-    btn: {
-        backgroundColor: "#D3F26A",
-        borderRadius: 3,
-        padding: 15,
-        paddingTop: 7,
-        paddingBottom: 7,
-    },
-    btnRound: {
-        backgroundColor: "#D3F26A",
-        borderRadius: 100,
-        width: 70,
-        height: 70,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    btnText: {
-        fontSize: 20,
-        color: "#25282B",
-        textAlign: "center",
     },
 });

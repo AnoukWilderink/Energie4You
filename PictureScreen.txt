@@ -1,0 +1,151 @@
+// import React, { useEffect, useState, useRef } from "react";
+// import { StyleSheet, Text, Pressable, SafeAreaView } from "react-native";
+// import * as Location from "expo-location";
+// import { Camera } from "expo-camera";
+// import { btnStyles } from "./btnStyles";
+// import { StatusBar } from "expo-status-bar";
+// import * as MediaLibrary from "expo-media-library";
+// // import { styles } from "./styles";
+
+// const PictureScreen = ({ navigation }) => {
+//     const cameraRef = useRef();
+//     const [photo, setPhoto] = useState();
+//     const [location, setLocation] = useState("");
+//     const [hasCameraPermission, setHasCameraPermission] = useState();
+//     const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
+//         useState();
+
+//     useEffect(() => {
+//         (async () => {
+//             const cameraPermission =
+//                 await Camera.requestCameraPermissionsAsync();
+//             const mediaLibraryPermission =
+//                 await MediaLibrary.requestPermissionsAsync();
+//             setHasCameraPermission(cameraPermission.status === "granted");
+//             setHasMediaLibraryPermission(
+//                 mediaLibraryPermission.status === "granted"
+//             );
+//         })();
+//     }, []);
+
+//     const takePic = async () => {
+//         if (!hasCameraPermission) {
+//             alert("Camera permission not granted");
+//             return;
+//         }
+
+
+//         let options = {
+//             quality: 1,
+//             base64: true,
+//             exif: false,
+//         };
+    
+//         // Location not found
+//         let cityName = "Locatie Onbekend"; 
+    
+//         try {
+//             let { status } = await Location.requestForegroundPermissionsAsync();
+//             if (status !== "granted") {
+//                 alert("Permission to access location was denied");
+//                 return;
+//             }
+    
+//             let deviceLocation = await Location.getCurrentPositionAsync({});
+//             let reverseGeocode = await Location.reverseGeocodeAsync({
+//                 latitude: deviceLocation.coords.latitude,
+//                 longitude: deviceLocation.coords.longitude,
+//             });
+//             cityName = reverseGeocode[0]?.city || "Unknown City";
+//             setLocation(cityName);
+//         } catch (error) {
+//             console.error("Error getting location:", error);
+//         }
+    
+//         let newPhoto = await cameraRef.current.takePictureAsync(options);
+    
+//         try {
+//             const asset = await MediaLibrary.createAssetAsync(newPhoto.uri);
+//             if (asset) {
+//                 alert("Afbeelding opgeslagen in gallerij");
+//             } else {
+//                 alert("Niet gelukt afbeelding op te slaan in gallerij");
+//             }
+//         } catch (error) {
+//             console.error("Error saving image to media library:", error);
+//         }
+    
+//         setPhoto(newPhoto);
+//         // Navigate to MainScreen with the taken photo and location
+//         navigation.navigate("MainScreen", { photo: newPhoto, location: cityName });
+//     };
+
+//     return (
+//         <SafeAreaView style={styles.containerCamera}>
+//             {hasCameraPermission ? (
+//                 <Camera style={styles.camera} ref={cameraRef} />
+//             ) : (
+//                 <Text>No camera permission</Text>
+//             )}
+//             <Pressable
+//                 style={[
+//                     btnStyles.btnRound,
+//                     {
+//                         position: "absolute",
+//                         bottom: 50,
+//                         left: "50%",
+//                         transform: [{ translateX: -35 }],
+//                     },
+//                 ]}
+//                 onPress={takePic}
+//             >
+//                 <Text style={btnStyles.btnText}>click</Text>
+//             </Pressable>
+
+//             <StatusBar style="auto" />
+//         </SafeAreaView>
+//     );
+// };
+
+// const styles = StyleSheet.create({
+//     containerCamera: {
+//         flex: 1,
+//         color: "#D3F26A",
+//         position: "relative",
+//     },
+
+//     container: {
+//         flex: 1,
+//         color: "#D3F26A",
+//         backgroundColor: "#011302",
+//         alignItems: "start",
+//         justifyContent: "start",
+//         padding: 75,
+//         paddingLeft: 30,
+//         paddingRight: 30,
+//         gap: 10,
+//         position: "relative",
+//     },
+
+//     camera: {
+//         width: "100%",
+//         height: "100%",
+//         objectFit: "cover",
+//     },
+
+//     green: {
+//         color: "#D3F26A",
+//         fontSize: 20,
+//     },
+//     input: {
+//         fontSize: 18,
+//         backgroundColor: "white",
+//         width: "100",
+//         color: "#808080",
+//         borderRadius: 3,
+//         paddingLeft: 10,
+//         padding: 3,
+//     },
+// });
+
+// export default PictureScreen;

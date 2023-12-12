@@ -87,9 +87,9 @@ const MainScreen = () => {
         try {
             const asset = await MediaLibrary.createAssetAsync(newPhoto.uri);
             if (asset) {
-                alert("Image saved to media library!");
+                alert("Afbeelding opgeslagen in gallerij");
             } else {
-                alert("Failed to save image to media library");
+                alert("Mislukt om afbeelding op te slaan in gallerij");
             }
         } catch (error) {
             console.error("Error saving image to media library:", error);

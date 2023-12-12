@@ -1,0 +1,158 @@
+// import React, { useEffect, useState } from "react";
+// import {
+//     Text,
+//     TextInput,
+//     View,
+//     SafeAreaView,
+//     Image,
+//     Pressable,
+//     ScrollView,
+// } from "react-native";
+// import { Picker } from "@react-native-picker/picker";
+// import * as MailComposer from "expo-mail-composer";
+// import { styles } from "./styles";
+// import { btnStyles } from "./btnStyles";
+
+// const MainScreen = ({route, navigation}) => {
+//     const [isAvailable, setIsAvailable] = useState(false);
+//     const [category, setCategory] = useState("Grondkabels");
+//     const [description, setDescription] = useState("");
+//     const [engineer, setEngineer] = useState("");
+//     const [location, setLocation] = useState("");
+//     const { photo, location: initialLocation } = route.params || {};
+
+//     useEffect(() => {
+//         async function checkAvailability() {
+//             const isMailAvailable = await MailComposer.isAvailableAsync();
+//             setIsAvailable(isMailAvailable);
+//         }
+
+//         checkAvailability();
+//     }, []);
+
+//     useEffect(() => {
+//         setLocation(initialLocation || "");
+//     }, [initialLocation]);
+
+//     const sendMail = async () => {
+//         const emailBody = `Categorie: ${category}\nOmschrijving: ${description}\n Monteur: ${engineer}\nLocatie: ${location}`;
+
+//         MailComposer.composeAsync({
+//             body: emailBody,
+//         });
+//     };
+
+//     if (photo) {
+//         return (
+//             <ScrollView>
+//                 <SafeAreaView style={styles.container}>
+//                     <Text
+//                         style={[
+//                             styles.green,
+//                             {
+//                                 fontSize: 32,
+//                                 textAlign: "center",
+//                                 paddingBottom: 30,
+//                             },
+//                         ]}
+//                     >
+//                         Energie4You
+//                     </Text>
+//                     <View
+//                         style={{
+//                             width: "100%",
+//                             height: 250,
+//                             objectFit: "cover",
+//                             borderRadius: 3,
+//                         }}
+//                     >
+//                         <Image
+//                             style={{
+//                                 width: "100%",
+//                                 height: "100%",
+//                             }}
+//                             source={{
+//                                 uri: "data:image/jpg;base64," + photo.base64,
+//                             }}
+//                         />
+//                     </View>
+
+//                     <Pressable
+//                         style={btnStyles.btn}
+//                         // onPress={() => setPhoto(undefined)}
+//                         onPress={() => navigation.navigate("PictureScreen")}
+//                     >
+//                         <Text style={btnStyles.btnText}>Opnieuw maken</Text>
+//                     </Pressable>
+
+//                     <Text style={styles.green}>Categorie</Text>
+//                     <Picker
+//                         style={styles.input}
+//                         selectedValue={category}
+//                         onValueChange={(currentCategory) =>
+//                             setCategory(currentCategory)
+//                         }
+//                     >
+//                         <Picker.Item label="Grondkabels" value="grondkabels" />
+//                         <Picker.Item
+//                             label="Hoogspanningsmasten"
+//                             value="hoogspanningsmasten"
+//                         />
+//                         <Picker.Item label="Luchtkabels" value="luchtkabels" />
+//                         <Picker.Item
+//                             label="Schakelkasten"
+//                             value="schakelkasten"
+//                         />
+//                     </Picker>
+//                     <Text style={styles.green}>Omschrijving</Text>
+//                     <TextInput
+//                         style={[
+//                             styles.input,
+//                             {
+//                                 height: 100,
+//                                 textAlign: "left",
+//                                 verticalAlign: "top",
+//                             },
+//                         ]}
+//                         secureTextEntry={false}
+//                         placeholder="Omschrijving"
+//                         value={description}
+//                         onChangeText={setDescription}
+//                     />
+//                     <Text style={styles.green}>Monteur</Text>
+//                     <TextInput
+//                         style={styles.input}
+//                         secureTextEntry={false}
+//                         placeholder="Monteur"
+//                         value={engineer}
+//                         onChangeText={setEngineer}
+//                     />
+//                     <Text style={styles.green}>Locatie</Text>
+//                     <TextInput
+//                         style={styles.input}
+//                         secureTextEntry={false}
+//                         placeholder="Location"
+//                         value={location}
+//                         onChangeText={setLocation}
+//                     />
+
+//                     {isAvailable ? (
+//                         <Pressable
+//                             style={({ pressed }) => [
+//                                 btnStyles.btn,
+//                                 pressed && styles.btnPressed,
+//                             ]}
+//                             onPress={sendMail}
+//                         >
+//                             <Text style={btnStyles.btnText}>Send Mail</Text>
+//                         </Pressable>
+//                     ) : (
+//                         <Text>Email not available</Text>
+//                     )}
+//                 </SafeAreaView>
+//             </ScrollView>
+//         );
+//     }
+// };
+
+// export default MainScreen;
