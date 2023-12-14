@@ -13,9 +13,7 @@ export const styles = StyleSheet.create({
         backgroundColor: "#011302",
         alignItems: "start",
         justifyContent: "start",
-        padding: 75,
-        paddingLeft: 30,
-        paddingRight: 30,
+        padding: 30,
         gap: 10,
         position: "relative",
     },
@@ -29,14 +27,27 @@ export const styles = StyleSheet.create({
     green: {
         color: "#D3F26A",
         fontSize: 20,
+        marginTop:10,
     },
     input: {
         fontSize: 18,
         backgroundColor: "white",
         width: "100",
-        color: "#808080",
-        borderRadius: 3,
+        height: 50,
+        color: "#000",
+        borderRadius: 5,
         paddingLeft: 10,
         padding: 3,
+
     },
+    
+    pickerContainer: {
+        width: "100%",
+        height: 50,
+        backgroundColor: "white",
+        borderRadius: 5,
+        marginBottom: 10, // Adjust as needed
+        overflow: "hidden", // Clip the inner Picker to the rounded borders
+    },
+
 });

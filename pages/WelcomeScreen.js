@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     StyleSheet,
     View,
@@ -10,6 +10,16 @@ import {
 import { btnStyles } from "../btnStyles";
 
 const WelcomeScreen = ({ navigation }) => {
+    const [isButtonPressed, setIsButtonPressed] = useState(false);
+
+    const handleButtonRelease = () => {
+        setIsButtonPressed(false);
+    };
+
+    const handleButtonPress = () => {
+        setIsButtonPressed(true);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.imageContainer}>
@@ -23,7 +33,16 @@ const WelcomeScreen = ({ navigation }) => {
                     Ga direct aan de slag om het gevonden defect vast te leggen
                 </Text>
                 <Pressable
-                    style={btnStyles.btn}
+                    style={({ pressed }) => [
+                        btnStyles.btn,
+                        {
+                            backgroundColor: pressed
+                                ? "#a9c255" // Darker green when pressed
+                                : btnStyles.btnRound.backgroundColor,
+                        },
+                    ]}
+                    onPressIn={handleButtonPress}
+                    onPressOut={handleButtonRelease}
                     onPress={() => navigation.navigate("MainScreen")}
                 >
                     <Text style={btnStyles.btnText}>Defect melden</Text>
