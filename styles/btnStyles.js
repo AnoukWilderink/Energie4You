@@ -3,11 +3,11 @@ import { StyleSheet } from "react-native";
 export const btnStyles = StyleSheet.create({
     btn: {
         backgroundColor: "#D3F26A",
-        borderRadius: 3,
         padding: 15,
-        paddingTop: 7,
-        paddingBottom: 7,
+        paddingTop: 10,
+        paddingBottom: 10,
         borderRadius: 100,
+        width: "100%",
     },
     btnRound: {
         backgroundColor: "#D3F26A",

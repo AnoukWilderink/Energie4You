@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
         backgroundColor: "#011302",
         alignItems: "start",
         justifyContent: "start",
-        padding: 30,
+        padding: "8%",
         gap: 10,
         position: "relative",
     },
@@ -24,21 +24,21 @@ export const styles = StyleSheet.create({
         objectFit: "cover",
     },
 
-    green: {
+    textGreen: {
         color: "#D3F26A",
         fontSize: 20,
         marginTop:10,
     },
+
     input: {
         fontSize: 18,
-        backgroundColor: "white",
-        width: "100",
+        backgroundColor: "#fff",
+        width: "100%",
         height: 50,
         color: "#000",
         borderRadius: 5,
-        paddingLeft: 10,
-        padding: 3,
-
+        paddingHorizontal: 10,
+        paddingVertical: 8,
     },
     
     pickerContainer: {
@@ -49,5 +49,11 @@ export const styles = StyleSheet.create({
         marginBottom: 10, // Adjust as needed
         overflow: "hidden", // Clip the inner Picker to the rounded borders
     },
+
+    icon: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    }
 
 });

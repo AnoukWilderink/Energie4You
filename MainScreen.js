@@ -6,7 +6,7 @@ import {
     View,
     SafeAreaView,
     Image,
-    Pressable,
+    TouchableOpacity,
     ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
@@ -14,11 +14,13 @@ import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as MailComposer from "expo-mail-composer";
 import * as Location from "expo-location";
+
+// icons
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 //styles
-import { styles } from "./styles";
-import { btnStyles } from "./btnStyles";
+import { styles } from "./styles/styles";
+import { btnStyles } from "./styles/btnStyles";
 
 const MainScreen = () => {
     const cameraRef = useRef();
@@ -31,15 +33,6 @@ const MainScreen = () => {
     const [description, setDescription] = useState("");
     const [engineer, setEngineer] = useState("");
     const [location, setLocation] = useState("");
-    const [isButtonPressed, setIsButtonPressed] = useState(false);
-
-    const handleButtonRelease = () => {
-        setIsButtonPressed(false);
-    };
-
-    const handleButtonPress = () => {
-        setIsButtonPressed(true);
-    };
 
     useEffect(() => {
         (async () => {
@@ -105,7 +98,7 @@ const MainScreen = () => {
     };
 
     const sendMail = async () => {
-        const emailBody = `Categorie: ${category}\nOmschrijving: ${description}\n Monteur: ${engineer}\nLocatie: ${location}`;
+        const emailBody = `Categorie: ${category}\nBeschrijving: ${description}\n Monteur: ${engineer}\nLocatie: ${location}`;
 
         MailComposer.composeAsync({
             body: emailBody,
@@ -127,7 +120,7 @@ const MainScreen = () => {
                             style={{
                                 resizeMode: "contain",
                                 width: "100%",
-                                height: 70,
+                                height: "auto",
                                 marginBottom: 10,
                             }}
                             source={require("./assets/logo.png")}
@@ -152,21 +145,18 @@ const MainScreen = () => {
                                 uri: "data:image/jpg;base64," + photo.base64,
                             }}
                         />
-                        <Pressable
-                            onPressIn={handleButtonPress}
-                            onPressOut={handleButtonRelease}
-                            style={({ pressed }) => [
+
+                        <TouchableOpacity
+                            style={[
                                 btnStyles.btnRound,
                                 {
                                     position: "absolute",
                                     bottom: -30,
                                     right: -10,
                                     transform: [{ translateX: -35 }],
-                                    backgroundColor: pressed
-                                        ? "#a9c255" // Darker green when pressed
-                                        : btnStyles.btnRound.backgroundColor,
                                 },
                             ]}
+                            activeOpacity={0.9}
                             onPress={() => setPhoto(undefined)}
                         >
                             <MaterialCommunityIcons
@@ -181,10 +171,10 @@ const MainScreen = () => {
                                 size={42}
                                 color="black"
                             />
-                        </Pressable>
+                        </TouchableOpacity>
                     </View>
 
-                    <Text style={styles.green}>Categorie</Text>
+                    <Text style={styles.textGreen}>Categorie</Text>
                     <View style={styles.pickerContainer}>
                         <Picker
                             style={styles.input}
@@ -211,22 +201,25 @@ const MainScreen = () => {
                             />
                         </Picker>
                     </View>
-                    <Text style={styles.green}>Omschrijving</Text>
+                    <Text style={styles.textGreen}>Beschrijving</Text>
                     <TextInput
                         style={[
                             styles.input,
                             {
                                 height: 100,
                                 textAlign: "left",
-                                verticalAlign: "top",
+                                ...(Platform.OS === "android"
+                                    ? { textAlignVertical: "top" }
+                                    : { paddingTop: 8 }),
                             },
                         ]}
+                        multiline={true}
                         secureTextEntry={false}
-                        placeholder="Omschrijving"
+                        placeholder="Beschrijving"
                         value={description}
                         onChangeText={setDescription}
                     />
-                    <Text style={styles.green}>Monteur</Text>
+                    <Text style={styles.textGreen}>Monteur</Text>
                     <TextInput
                         style={styles.input}
                         secureTextEntry={false}
@@ -234,7 +227,7 @@ const MainScreen = () => {
                         value={engineer}
                         onChangeText={setEngineer}
                     />
-                    <Text style={styles.green}>Locatie</Text>
+                    <Text style={styles.textGreen}>Locatie</Text>
                     <TextInput
                         style={styles.input}
                         secureTextEntry={false}
@@ -244,25 +237,20 @@ const MainScreen = () => {
                     />
 
                     {isAvailable ? (
-                        <Pressable
-                            style={({ pressed }) => [
+                        <TouchableOpacity
+                            style={[
                                 btnStyles.btn,
-                                pressed && styles.btnPressed,
                                 {
                                     marginTop: 30,
-                                    backgroundColor: pressed
-                                        ? "#a9c255" // Darker green when pressed
-                                        : btnStyles.btnRound.backgroundColor,
                                 },
                             ]}
+                            activeOpacity={0.9}
                             onPress={sendMail}
-                            onPressIn={handleButtonPress}
-                            onPressOut={handleButtonRelease}
                         >
                             <Text style={btnStyles.btnText}>
                                 Verzenden via mail
                             </Text>
-                        </Pressable>
+                        </TouchableOpacity>
                     ) : (
                         <Text>Email not available</Text>
                     )}
@@ -274,36 +262,26 @@ const MainScreen = () => {
     return (
         <SafeAreaView style={styles.containerCamera}>
             <Camera style={styles.camera} ref={cameraRef} />
-            <Pressable
-                style={({ pressed }) => [
+            <TouchableOpacity
+                style={[
                     btnStyles.btnRound,
                     {
                         position: "absolute",
                         bottom: 50,
                         left: "50%",
                         transform: [{ translateX: -35 }],
-                        backgroundColor: pressed
-                            ? "#a9c255" // Darker green when pressed
-                            : btnStyles.btnRound.backgroundColor,
                     },
                 ]}
+                activeOpacity={0.9}
                 onPress={takePic}
-                onPressIn={handleButtonPress}
-                onPressOut={handleButtonRelease}
             >
                 <MaterialCommunityIcons
-                    style={[
-                        {
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        },
-                    ]}
+                    style={styles.icon}
                     name="camera"
                     size={42}
                     color="black"
                 />
-            </Pressable>
+            </TouchableOpacity>
             <StatusBar style="auto" />
         </SafeAreaView>
     );
