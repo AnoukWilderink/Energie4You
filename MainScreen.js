@@ -8,6 +8,7 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
+    Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Camera } from "expo-camera";
@@ -66,7 +67,7 @@ const MainScreen = () => {
         try {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
-                alert("Permission to access location was denied");
+                Alert.alert("Locatietoegang gewijgerd","Om de locatie op te halen, is toegang tot de locatie vereist. Sta toegang tot de locatie toe in de instellingen van de app.");
                 return;
             }
 
@@ -86,9 +87,15 @@ const MainScreen = () => {
         try {
             const asset = await MediaLibrary.createAssetAsync(newPhoto.uri);
             if (asset) {
-                alert("Afbeelding opgeslagen in gallerij");
+                Alert.alert(
+                    "Succes",
+                    "Afbeelding opgeslagen in gallerij en de locatie is opgehaald."
+                );
             } else {
-                alert("Mislukt om afbeelding op te slaan in gallerij");
+                Alert.alert(
+                    "Fout bij opslaan",
+                    "Er is een fout opgetreden bij het opslaan van de afbeelding in de galerij. Probeer het opnieuw of controleer de app-instellingen."
+                );
             }
         } catch (error) {
             console.error("Error saving image to media library:", error);
@@ -100,9 +107,28 @@ const MainScreen = () => {
     const sendMail = async () => {
         const emailBody = `Categorie: ${category}\nBeschrijving: ${description}\n Monteur: ${engineer}\nLocatie: ${location}`;
 
-        MailComposer.composeAsync({
-            body: emailBody,
-        });
+        Alert.alert(
+            "Let op",
+            "De afbeelding wordt niet automatisch toegevoegd aan de mail. Zorg ervoor dat je handmatig de afbeelding bijvoegt als bijlage voordat je de mail verstuurt.",
+            [
+                {
+                    text: "OK",
+                    onPress: async () => {
+                        try {
+                            await MailComposer.composeAsync({
+                                body: emailBody,
+                            });
+                        } catch (error) {
+                            console.error("Error composing email:", error);
+                            Alert.alert(
+                                "Verzendfout",
+                                "Er is een fout opgetreden bij het verzenden van de mail."
+                            );
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     if (photo) {
